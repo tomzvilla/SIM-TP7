@@ -67,7 +67,9 @@
     <Compile Include="Clases\Cliente.cs" />
     <Compile Include="Clases\Estado.cs" />
     <Compile Include="Clases\Eventos.cs" />
+    <Compile Include="Clases\Motivo.cs" />
     <Compile Include="Clases\Servidor.cs" />
+    <Compile Include="Clases\VectorEstado.cs" />
     <Compile Include="Clases\Zapatos.cs" />
     <Compile Include="Interfaz\menu.cs">
       <SubType>Form</SubType>

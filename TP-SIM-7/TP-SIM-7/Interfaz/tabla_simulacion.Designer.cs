@@ -48,6 +48,7 @@ namespace TP_SIM_7.Interfaz
             this.cola_clientes = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.cola_zapatos = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.estado_z1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.cola_retirar_zap = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_simulacion)).BeginInit();
             this.SuspendLayout();
             // 
@@ -56,7 +57,7 @@ namespace TP_SIM_7.Interfaz
             this.dgv_simulacion.AllowUserToAddRows = false;
             this.dgv_simulacion.AllowUserToDeleteRows = false;
             this.dgv_simulacion.AllowUserToResizeRows = false;
-            this.dgv_simulacion.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this.dgv_simulacion.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.DisplayedCells;
             this.dgv_simulacion.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgv_simulacion.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.reloj,
@@ -76,7 +77,8 @@ namespace TP_SIM_7.Interfaz
             this.tiempo_restante,
             this.cola_clientes,
             this.cola_zapatos,
-            this.estado_z1});
+            this.estado_z1,
+            this.cola_retirar_zap});
             this.dgv_simulacion.Location = new System.Drawing.Point(12, 12);
             this.dgv_simulacion.Name = "dgv_simulacion";
             this.dgv_simulacion.Size = new System.Drawing.Size(1212, 626);
@@ -86,91 +88,115 @@ namespace TP_SIM_7.Interfaz
             // 
             this.reloj.HeaderText = "Reloj (min)";
             this.reloj.Name = "reloj";
+            this.reloj.Width = 75;
             // 
             // evento
             // 
             this.evento.HeaderText = "Evento";
             this.evento.Name = "evento";
+            this.evento.Width = 66;
             // 
             // rnd1
             // 
             this.rnd1.HeaderText = "RND";
             this.rnd1.Name = "rnd1";
+            this.rnd1.Width = 56;
             // 
             // tiempo_entre_llegadas
             // 
             this.tiempo_entre_llegadas.HeaderText = "Tiempo Entre Llegadas";
             this.tiempo_entre_llegadas.Name = "tiempo_entre_llegadas";
+            this.tiempo_entre_llegadas.Width = 90;
             // 
             // prox_llegada
             // 
             this.prox_llegada.HeaderText = "Proxima Llegada";
             this.prox_llegada.Name = "prox_llegada";
+            this.prox_llegada.Width = 101;
             // 
             // rnd2
             // 
             this.rnd2.HeaderText = "RND";
             this.rnd2.Name = "rnd2";
+            this.rnd2.Width = 56;
             // 
             // motivo
             // 
             this.motivo.HeaderText = "Motivo Cliente";
             this.motivo.Name = "motivo";
+            this.motivo.Width = 91;
             // 
             // rnd3
             // 
             this.rnd3.HeaderText = "RND";
             this.rnd3.Name = "rnd3";
+            this.rnd3.Width = 56;
             // 
             // tiempo_atencion
             // 
             this.tiempo_atencion.HeaderText = "Tiempo Atencion";
             this.tiempo_atencion.Name = "tiempo_atencion";
+            this.tiempo_atencion.Width = 103;
             // 
             // tiempo_f_atencion
             // 
             this.tiempo_f_atencion.HeaderText = "T Fin Atencion";
             this.tiempo_f_atencion.Name = "tiempo_f_atencion";
+            this.tiempo_f_atencion.Width = 93;
             // 
             // rnd4
             // 
             this.rnd4.HeaderText = "RND";
             this.rnd4.Name = "rnd4";
+            this.rnd4.Width = 56;
             // 
             // tiempo_rep
             // 
             this.tiempo_rep.HeaderText = "T Reparacion";
             this.tiempo_rep.Name = "tiempo_rep";
+            this.tiempo_rep.Width = 89;
             // 
             // tiempo_secado
             // 
             this.tiempo_secado.HeaderText = "T Secado";
             this.tiempo_secado.Name = "tiempo_secado";
+            this.tiempo_secado.Width = 73;
             // 
             // tiempo_f_reparacion
             // 
             this.tiempo_f_reparacion.HeaderText = "T Fin Reparacion";
             this.tiempo_f_reparacion.Name = "tiempo_f_reparacion";
+            this.tiempo_f_reparacion.Width = 105;
             // 
             // tiempo_restante
             // 
             this.tiempo_restante.HeaderText = "T Restante";
             this.tiempo_restante.Name = "tiempo_restante";
+            this.tiempo_restante.Width = 78;
             // 
             // cola_clientes
             // 
             this.cola_clientes.HeaderText = "Cola Clientes";
             this.cola_clientes.Name = "cola_clientes";
+            this.cola_clientes.Width = 86;
             // 
             // cola_zapatos
             // 
             this.cola_zapatos.HeaderText = "Cola Zapatos";
             this.cola_zapatos.Name = "cola_zapatos";
+            this.cola_zapatos.Width = 87;
             // 
             // estado_z1
             // 
             this.estado_z1.HeaderText = "Estado Z1";
             this.estado_z1.Name = "estado_z1";
+            this.estado_z1.Width = 75;
+            // 
+            // cola_retirar_zap
+            // 
+            this.cola_retirar_zap.HeaderText = "Zapatos a Retirar";
+            this.cola_retirar_zap.Name = "cola_retirar_zap";
+            this.cola_retirar_zap.Width = 77;
             // 
             // tabla_simulacion
             // 
@@ -207,5 +233,6 @@ namespace TP_SIM_7.Interfaz
         private System.Windows.Forms.DataGridViewTextBoxColumn cola_clientes;
         private System.Windows.Forms.DataGridViewTextBoxColumn cola_zapatos;
         private System.Windows.Forms.DataGridViewTextBoxColumn estado_z1;
+        private System.Windows.Forms.DataGridViewTextBoxColumn cola_retirar_zap;
     }
 }

@@ -66,7 +66,7 @@ namespace TP_SIM_7
         {
             if (fila_desde.Value + filas_a_mostrar.Value - 1 <= num_iteraciones.Value)
             {
-                var tp7 = new tabla_simulacion((double)this.num_exp_neg.Value, (double)this.num_cli_a.Value, (double)this.num_cli_b.Value, (double)this.num_rep_a.Value, (double)this.num_rep_a.Value, (int)this.num_iteraciones.Value, (int)this.num_cant_zapatos.Value, (double)this.num_hora_inicio.Value); ;
+                var tp7 = new tabla_simulacion((double)this.num_exp_neg.Value, (double)this.num_cli_a.Value, (double)this.num_cli_b.Value, (double)this.num_rep_a.Value, (double)this.num_rep_b.Value, (int)this.num_iteraciones.Value, (int)this.num_cant_zapatos.Value, (double)this.num_hora_inicio.Value, (double)this.filas_a_mostrar.Value, (double)this.fila_desde.Value ); ;
                 tp7.Show();
                 this.Hide();
             }
@@ -75,6 +75,11 @@ namespace TP_SIM_7
                 MessageBox.Show("El numero de filas a mostrar tiene que ser menor a la cantidad de iteraciones", "Alerta", MessageBoxButtons.OK);
                 
             }
+        }
+
+        private void menu_Load(object sender, EventArgs e)
+        {
+
         }
     }
 }

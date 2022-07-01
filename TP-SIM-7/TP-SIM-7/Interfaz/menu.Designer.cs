@@ -52,6 +52,11 @@ namespace TP_SIM_7
             this.label3 = new System.Windows.Forms.Label();
             this.pn_main = new System.Windows.Forms.Panel();
             this.pn_simular = new System.Windows.Forms.Panel();
+            this.btn_cancelar = new System.Windows.Forms.Button();
+            this.num_hora_inicio = new System.Windows.Forms.NumericUpDown();
+            this.label18 = new System.Windows.Forms.Label();
+            this.num_cant_zapatos = new System.Windows.Forms.NumericUpDown();
+            this.label17 = new System.Windows.Forms.Label();
             this.filas_a_mostrar = new System.Windows.Forms.NumericUpDown();
             this.label14 = new System.Windows.Forms.Label();
             this.btn_simular = new System.Windows.Forms.Button();
@@ -59,11 +64,6 @@ namespace TP_SIM_7
             this.fila_desde = new System.Windows.Forms.NumericUpDown();
             this.label16 = new System.Windows.Forms.Label();
             this.num_iteraciones = new System.Windows.Forms.NumericUpDown();
-            this.label17 = new System.Windows.Forms.Label();
-            this.num_cant_zapatos = new System.Windows.Forms.NumericUpDown();
-            this.label18 = new System.Windows.Forms.Label();
-            this.num_hora_inicio = new System.Windows.Forms.NumericUpDown();
-            this.btn_cancelar = new System.Windows.Forms.Button();
             this.pn_prob.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.num_rep_b)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.num_rep_a)).BeginInit();
@@ -72,11 +72,11 @@ namespace TP_SIM_7
             ((System.ComponentModel.ISupportInitialize)(this.num_exp_neg)).BeginInit();
             this.pn_main.SuspendLayout();
             this.pn_simular.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.num_hora_inicio)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.num_cant_zapatos)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.filas_a_mostrar)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.fila_desde)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.num_iteraciones)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.num_cant_zapatos)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.num_hora_inicio)).BeginInit();
             this.SuspendLayout();
             // 
             // label1
@@ -386,6 +386,74 @@ namespace TP_SIM_7
             this.pn_simular.TabIndex = 6;
             this.pn_simular.Visible = false;
             // 
+            // btn_cancelar
+            // 
+            this.btn_cancelar.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btn_cancelar.Location = new System.Drawing.Point(285, 305);
+            this.btn_cancelar.Name = "btn_cancelar";
+            this.btn_cancelar.Size = new System.Drawing.Size(121, 47);
+            this.btn_cancelar.TabIndex = 31;
+            this.btn_cancelar.Text = "Cancelar";
+            this.btn_cancelar.UseVisualStyleBackColor = true;
+            this.btn_cancelar.Click += new System.EventHandler(this.btn_cancelar_Click);
+            // 
+            // num_hora_inicio
+            // 
+            this.num_hora_inicio.DecimalPlaces = 2;
+            this.num_hora_inicio.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.num_hora_inicio.Location = new System.Drawing.Point(298, 228);
+            this.num_hora_inicio.Maximum = new decimal(new int[] {
+            -905992047,
+            126,
+            0,
+            0});
+            this.num_hora_inicio.Name = "num_hora_inicio";
+            this.num_hora_inicio.Size = new System.Drawing.Size(120, 29);
+            this.num_hora_inicio.TabIndex = 30;
+            this.num_hora_inicio.Value = new decimal(new int[] {
+            8,
+            0,
+            0,
+            0});
+            // 
+            // label18
+            // 
+            this.label18.AutoSize = true;
+            this.label18.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label18.Location = new System.Drawing.Point(113, 233);
+            this.label18.Name = "label18";
+            this.label18.Size = new System.Drawing.Size(100, 24);
+            this.label18.TabIndex = 29;
+            this.label18.Text = "Hora Inicio";
+            // 
+            // num_cant_zapatos
+            // 
+            this.num_cant_zapatos.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.num_cant_zapatos.Location = new System.Drawing.Point(298, 179);
+            this.num_cant_zapatos.Maximum = new decimal(new int[] {
+            -905992047,
+            126,
+            0,
+            0});
+            this.num_cant_zapatos.Name = "num_cant_zapatos";
+            this.num_cant_zapatos.Size = new System.Drawing.Size(120, 29);
+            this.num_cant_zapatos.TabIndex = 28;
+            this.num_cant_zapatos.Value = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            // 
+            // label17
+            // 
+            this.label17.AutoSize = true;
+            this.label17.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label17.Location = new System.Drawing.Point(113, 179);
+            this.label17.Name = "label17";
+            this.label17.Size = new System.Drawing.Size(113, 24);
+            this.label17.TabIndex = 27;
+            this.label17.Text = "Nro Zapatos";
+            // 
             // filas_a_mostrar
             // 
             this.filas_a_mostrar.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -496,74 +564,6 @@ namespace TP_SIM_7
             0,
             0});
             // 
-            // label17
-            // 
-            this.label17.AutoSize = true;
-            this.label17.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label17.Location = new System.Drawing.Point(113, 179);
-            this.label17.Name = "label17";
-            this.label17.Size = new System.Drawing.Size(113, 24);
-            this.label17.TabIndex = 27;
-            this.label17.Text = "Nro Zapatos";
-            // 
-            // num_cant_zapatos
-            // 
-            this.num_cant_zapatos.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.num_cant_zapatos.Location = new System.Drawing.Point(298, 179);
-            this.num_cant_zapatos.Maximum = new decimal(new int[] {
-            -905992047,
-            126,
-            0,
-            0});
-            this.num_cant_zapatos.Name = "num_cant_zapatos";
-            this.num_cant_zapatos.Size = new System.Drawing.Size(120, 29);
-            this.num_cant_zapatos.TabIndex = 28;
-            this.num_cant_zapatos.Value = new decimal(new int[] {
-            10,
-            0,
-            0,
-            0});
-            // 
-            // label18
-            // 
-            this.label18.AutoSize = true;
-            this.label18.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label18.Location = new System.Drawing.Point(113, 233);
-            this.label18.Name = "label18";
-            this.label18.Size = new System.Drawing.Size(100, 24);
-            this.label18.TabIndex = 29;
-            this.label18.Text = "Hora Inicio";
-            // 
-            // num_hora_inicio
-            // 
-            this.num_hora_inicio.DecimalPlaces = 2;
-            this.num_hora_inicio.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.num_hora_inicio.Location = new System.Drawing.Point(298, 228);
-            this.num_hora_inicio.Maximum = new decimal(new int[] {
-            -905992047,
-            126,
-            0,
-            0});
-            this.num_hora_inicio.Name = "num_hora_inicio";
-            this.num_hora_inicio.Size = new System.Drawing.Size(120, 29);
-            this.num_hora_inicio.TabIndex = 30;
-            this.num_hora_inicio.Value = new decimal(new int[] {
-            8,
-            0,
-            0,
-            0});
-            // 
-            // btn_cancelar
-            // 
-            this.btn_cancelar.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btn_cancelar.Location = new System.Drawing.Point(285, 305);
-            this.btn_cancelar.Name = "btn_cancelar";
-            this.btn_cancelar.Size = new System.Drawing.Size(121, 47);
-            this.btn_cancelar.TabIndex = 31;
-            this.btn_cancelar.Text = "Cancelar";
-            this.btn_cancelar.UseVisualStyleBackColor = true;
-            this.btn_cancelar.Click += new System.EventHandler(this.btn_cancelar_Click);
-            // 
             // menu
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -576,6 +576,7 @@ namespace TP_SIM_7
             this.Controls.Add(this.pn_prob);
             this.Name = "menu";
             this.Text = "Menu";
+            this.Load += new System.EventHandler(this.menu_Load);
             this.pn_prob.ResumeLayout(false);
             this.pn_prob.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.num_rep_b)).EndInit();
@@ -587,11 +588,11 @@ namespace TP_SIM_7
             this.pn_main.PerformLayout();
             this.pn_simular.ResumeLayout(false);
             this.pn_simular.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.num_hora_inicio)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.num_cant_zapatos)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.filas_a_mostrar)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.fila_desde)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.num_iteraciones)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.num_cant_zapatos)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.num_hora_inicio)).EndInit();
             this.ResumeLayout(false);
 
         }
