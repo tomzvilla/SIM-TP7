@@ -36,7 +36,7 @@ namespace TP_SIM_7.Interfaz
         public List<int> lista_ids_clientes = new List<int>();
         public List<int> lista_ids_zapatos = new List<int>();
 
-        public bool estaAbierto = true;
+        public bool calcularSecado = true;
 
         // Para RK 
         public string pathFile;
@@ -80,14 +80,29 @@ namespace TP_SIM_7.Interfaz
         private void simular()
         {
             // algunos contadores
-            List<int> contadores_actual = new List<int> { 0, 0 };
+            int contadoresZapatos = 0;
+            int contadoresClientes = 0;
+
+            // Para las métricas
+
+            int cant_clientes_atendidos = 0;
+            int cant_clientes_no_atendidos = 0;
+
+            double tiempo_reparacion = 0;
+            int cant_zapatos_reparados = 0;
+
+            double tiempo_zapatero_reparacion = 0;
+
+            double tiempo_acum_espera = 0;
+            int cant_zapatos_cola = 0;
 
             // Se crean los generadores
 
-            var gen_llegada = new Random();
-            var gen_motivo = new Random();
-            var gen_atencion= new Random();
-            var gen_reparacion= new Random();
+            var gen_semillas = new Random();
+            var gen_llegada = new Random(gen_semillas.Next());
+            var gen_motivo = new Random(gen_semillas.Next());
+            var gen_atencion= new Random(gen_semillas.Next());
+            var gen_reparacion= new Random(gen_semillas.Next());
 
             // Atributos de soporte
 
@@ -121,6 +136,9 @@ namespace TP_SIM_7.Interfaz
             };
             fila_anterior.zapatos = new List<Zapatos>();
             fila_anterior.clientes = new List<Cliente>();
+            fila_anterior.porc_clientes_no_atendidos = 0;
+            fila_anterior.t_prom_fin_reparacion = 0;
+            fila_anterior.t_prom_zap_cola = 0;
 
             for (int i = 0; i < this.cant_zapatos_inicial; i++)
             {
@@ -133,7 +151,7 @@ namespace TP_SIM_7.Interfaz
 
 
             };
-            contadores_actual = imprimirFila(fila_anterior, contadores_actual);
+            contadoresZapatos = imprimirFila(fila_anterior, contadoresZapatos);
             // Se crea la siguiente fila 
             var fila_actual = new VectorEstado();
 
@@ -160,6 +178,8 @@ namespace TP_SIM_7.Interfaz
 
                 if (fila_actual.evento == Eventos.llegada_cliente)
                 {
+                    fila_actual.motivo_cliente = Motivo.vacio;
+                    fila_actual.rnd2 = 0;
                     // Se crea el cliente que llega
                     var cliente = new Cliente
                     {
@@ -167,59 +187,86 @@ namespace TP_SIM_7.Interfaz
                         servidor_atencion = null,
                     };
                     contador_id_cli++;
+                    cant_clientes_atendidos++;
 
                     // Se calcula la proxima llegada, solo si la zapateria esta abierta
 
-                    //var valor = Convert.ToString((double)fila_anterior.reloj / 1440).Split('.')[0];
-                    //var horaDia = Convert.ToDouble(valor);
-                    //if(horaDia >= 8 && horaDia <= 16)
-                    
-                    var prox_llegada = generarRNDExponencial(gen_llegada, this.media_exp_llegada);
-                    fila_actual.rnd1 = prox_llegada[0];
-                    fila_actual.t_llegada = prox_llegada[1];
-                    fila_actual.t_prox_llegada = fila_actual.reloj + fila_actual.t_llegada;
-
-                    fila_actual.clientes.Add(cliente);
-                    // El cliente chequea si hay servidores libres
-                    bool servidorEstaLibre = fila_anterior.zapatero.estado == Estado.libre ? true : false;
-                    if (servidorEstaLibre || fila_anterior.zapatero.estado == Estado.reparando_zapato)
+                    //var valor = Convert.ToString((double)fila_anterior.reloj / 1440).Split('.');
+                    var valor = fila_anterior.reloj/1440 - Math.Truncate(fila_anterior.reloj / 1440);
+                    var horaDia = Math.Round(valor * 24,2) ;
+                    if (horaDia >= 8 && horaDia <= 16)
                     {
-                        // Se cambia el estado del cliente
-                        cliente.estado = Estado.siendo_atendido;
-                        cliente.servidor_atencion = fila_actual.zapatero;
+                        var prox_llegada = generarRNDExponencial(gen_llegada, this.media_exp_llegada);
+                        fila_actual.rnd1 = prox_llegada[0];
+                        fila_actual.t_llegada = prox_llegada[1];
+                        fila_actual.t_prox_llegada = fila_actual.reloj + fila_actual.t_llegada;
 
-                        // Se cambia el estado del servidor
-
-                        fila_actual.zapatero.estado = Estado.atendiendo_cliente;
-
-
-                        // Se calcula el tiempo de atencion
-                        var resultados = generarRNDUniforme(gen_atencion, atencion_a, atencion_b);
-                        fila_actual.rnd3 = resultados[0];
-                        fila_actual.t_atencion = resultados[1];
-                        fila_actual.t_fin_atencion = fila_actual.reloj + fila_actual.t_atencion;
-
-                        // Si el zapatero estaba reparando pasa esto
-
-                        if (fila_anterior.zapatero.estado == Estado.reparando_zapato)
+                        fila_actual.clientes.Add(cliente);
+                        // El cliente chequea si hay servidores libres
+                        bool servidorEstaLibre = fila_anterior.zapatero.estado == Estado.libre ? true : false;
+                        if (servidorEstaLibre || fila_anterior.zapatero.estado == Estado.reparando_zapato)
                         {
-                            reparacion_suspendida = true;
-                            var zapato_reparandose = obtenerZapato(fila_actual.zapatos);
-                            zapato_reparandose.estado = Estado.reparacion_suspendida;
-                            fila_actual.t_restante_reparacion = fila_anterior.t_fin_reparacion - fila_actual.reloj;
+
+                            // Si el zapatero estaba reparando pasa esto
+
+                            if (fila_anterior.zapatero.estado == Estado.reparando_zapato)
+                            {
+                                reparacion_suspendida = true;
+                                var zapato_reparandose = obtenerZapato(fila_actual.zapatos);
+                                zapato_reparandose.estado = Estado.reparacion_suspendida;
+                                fila_actual.t_restante_reparacion = fila_anterior.t_fin_reparacion - fila_actual.reloj;
+                                fila_actual.t_fin_reparacion = 0;
+                                tiempo_zapatero_reparacion += fila_actual.reloj - fila_actual.zapatero.tiempo_inicio_reparacion;
+                                fila_actual.zapatero.tiempo_inicio_reparacion = 0;
+                            }
+
+                            // Se cambia el estado del cliente
+                            cliente.estado = Estado.siendo_atendido;
+                            cliente.servidor_atencion = fila_actual.zapatero;
+
+                            // Se cambia el estado del servidor
+
+                            fila_actual.zapatero.estado = Estado.atendiendo_cliente;
+
+                            // Se calcula el tiempo de atencion
+                            var resultados = generarRNDUniforme(gen_atencion, atencion_a, atencion_b);
+                            fila_actual.rnd3 = resultados[0];
+                            fila_actual.t_atencion = resultados[1];
+                            fila_actual.t_fin_atencion = fila_actual.reloj + fila_actual.t_atencion;
+                        }
+                        else
+                        {
+                            fila_actual.cola_clientes.Add(cliente);
+                            cliente.estado = Estado.esperando_atencion;
                         }
                     }
-                    else
+                    else 
                     {
-                        fila_actual.cola_clientes.Add(cliente);
-                        cliente.estado = Estado.esperando_atencion;
-                    }
+                        // El cliente llego fuera de hora, no puede atenderse
+                        cliente.estado = Estado.destruido;
+                        fila_actual.clientes.Add(cliente);
+
+                        cant_clientes_no_atendidos++;
+                        // Se calcula la proxima llegada del cliente al dia siguiente
+
+                        var prox_llegada = generarRNDExponencial(gen_llegada, this.media_exp_llegada);
+                        fila_actual.rnd1 = prox_llegada[0];
+                        fila_actual.t_llegada = prox_llegada[1] + 960;
+                        fila_actual.t_prox_llegada = fila_actual.reloj + fila_actual.t_llegada;
+
+
+
+                    };
+                    
+                    
                     
   
                 } 
                 else if (fila_actual.evento == Eventos.fin_atencion_cliente)
                 {
+                    fila_actual.t_atencion = 0;
                     fila_actual.t_fin_atencion = 0;
+                    fila_actual.rnd3 = 0;
                     var zapato_entregar = new Zapatos();
                     // Se calcula el motivo del cliente
 
@@ -232,6 +279,8 @@ namespace TP_SIM_7.Interfaz
                     {
                         zapato_entregar.id = contador_id_zap;
                         contador_id_zap++;
+                        zapato_entregar.t_inicio_reparacion = fila_actual.reloj;
+                        fila_actual.zapatos.Add(zapato_entregar);
                     }
                     else
                     {
@@ -249,9 +298,27 @@ namespace TP_SIM_7.Interfaz
                     cliente_atendido.servidor_atencion = null;
                     cliente_atendido.estado = Estado.destruido;
 
+                    // Chequea si ya es hora de cierre
+
+                    var valor = Convert.ToString((double)fila_anterior.reloj / 1440).Split('.')[0];
+                    var horaDia = Math.Round(Convert.ToDouble(valor) * 24, 2);
+                    if (horaDia < 8 || horaDia > 16)
+                    {
+                        // Se deben eliminar los clientes en cola
+                        foreach(Cliente cliente in fila_actual.cola_clientes)
+                        {
+                            cliente.estado = Estado.destruido;
+                            cliente.servidor_atencion = null;
+                            cant_clientes_no_atendidos++;
+                        }
+                        fila_actual.cola_clientes = new List<Cliente>();
+                        fila_actual.t_fin_atencion = 0;
+
+                    }
+
                     // Chequea la cola
 
-                    if(fila_actual.cola_clientes.Count != 0)
+                    if (fila_actual.cola_clientes.Count != 0)
                     {
                         // Calcula el nuevo fin de atencion
                         var resultados = generarRNDUniforme(gen_atencion, atencion_a, atencion_b);
@@ -265,11 +332,18 @@ namespace TP_SIM_7.Interfaz
                         nuevo_cliente.estado = Estado.siendo_atendido;
                         nuevo_cliente.servidor_atencion = fila_actual.zapatero;
                         fila_actual.cola_clientes.RemoveAt(0);
+                        if (fila_actual.motivo_cliente == Motivo.entregar_pedido)
+                        {
+                            // Pone al nuevo zapato en la cola
+                            zapato_entregar.estado = Estado.esperando_reparacion;
+                            zapato_entregar.servidor_atencion = null;
+                            zapato_entregar.t_inicio_reparacion = fila_actual.reloj;
+                            zapato_entregar.t_inico_espera = fila_actual.reloj;
+                            cant_zapatos_cola++;
+                            fila_actual.cola_zapatos_reparacion.Add(zapato_entregar);
+                            
+                        }
 
-                        // Pone al nuevo zapato en la cola
-                        zapato_entregar.estado = Estado.esperando_reparacion;
-                        zapato_entregar.servidor_atencion = null;
-                        fila_actual.cola_zapatos_reparacion.Add(zapato_entregar);
                     }
                     else
                     {
@@ -281,6 +355,20 @@ namespace TP_SIM_7.Interfaz
                             zapato_suspendido.estado = Estado.siendo_reparado;
                             zapato_suspendido.servidor_atencion = fila_actual.zapatero;
                             fila_actual.t_fin_reparacion = fila_actual.reloj + fila_actual.t_restante_reparacion;
+                            fila_actual.zapatero.estado = Estado.reparando_zapato;
+                            fila_actual.zapatero.tiempo_inicio_reparacion = fila_actual.reloj;
+                            if (fila_actual.motivo_cliente == Motivo.entregar_pedido)
+                            {
+                                // Pone al nuevo zapato en la cola
+                                zapato_entregar.estado = Estado.esperando_reparacion;
+                                zapato_entregar.servidor_atencion = null;
+                                zapato_entregar.t_inicio_reparacion = fila_actual.reloj;
+                                zapato_entregar.t_inico_espera = fila_actual.reloj;
+                                cant_zapatos_cola++;
+                                fila_actual.cola_zapatos_reparacion.Add(zapato_entregar);
+                            }
+                            fila_actual.t_restante_reparacion = 0;
+                            reparacion_suspendida = false;
                         }
                         else
                         {
@@ -288,46 +376,100 @@ namespace TP_SIM_7.Interfaz
                             if(fila_actual.cola_zapatos_reparacion.Count != 0)
                             {
                                 // Se pone en la cola el zapato dejado por el cliente
-                                zapato_entregar.estado = Estado.esperando_reparacion;
-                                fila_actual.cola_zapatos_reparacion.Add(zapato_entregar);
+                                if (fila_actual.motivo_cliente == Motivo.entregar_pedido)
+                                {
+                                    // Pone al nuevo zapato en la cola
+                                    zapato_entregar.estado = Estado.esperando_reparacion;
+                                    zapato_entregar.servidor_atencion = null;
+                                    zapato_entregar.t_inicio_reparacion = fila_actual.reloj;
+                                    zapato_entregar.t_inico_espera = fila_actual.reloj;
+                                    cant_zapatos_cola++;
+                                    fila_actual.cola_zapatos_reparacion.Add(zapato_entregar);
+                                }
 
                                 // Se toma el primer zapato de la cola y se lo repara
 
                                 var zapato_a_reparar = fila_actual.cola_zapatos_reparacion[0];
                                 zapato_a_reparar.estado = Estado.siendo_reparado;
                                 zapato_a_reparar.servidor_atencion = fila_actual.zapatero;
+                                if(zapato_a_reparar.t_inico_espera != 0)
+                                    tiempo_acum_espera += fila_actual.reloj - zapato_a_reparar.t_inico_espera;
                                 fila_actual.cola_zapatos_reparacion.RemoveAt(0);
+
+                                // Cambia el estado del zapatero
+
+                                fila_actual.zapatero.estado = Estado.reparando_zapato;
+                                fila_actual.zapatero.tiempo_inicio_reparacion = fila_actual.reloj;
 
                                 // Calcula el nuevo fin de reparacion
 
                                 var resultadosRep = generarRNDUniforme(gen_reparacion, rep_a, rep_b);
                                 fila_actual.rnd4 = resultadosRep[0];
                                 fila_actual.t_reparacion = resultadosRep[1];
-                                calcularTiempoSecado(fila_actual.reloj, this.pathFile);
+                                if (calcularSecado)
+                                {
+                                    calcularTiempoSecado(fila_actual.reloj, this.pathFile);
+                                    calcularSecado = false;
+                                }
+                                fila_actual.t_secado = this.secado;
                                 fila_actual.t_fin_reparacion = fila_actual.reloj + fila_actual.t_reparacion + secado;
                             }
                             // Si la cola esta vacia repara el zapato que recibio
                             else
                             {
-                                zapato_entregar.estado = Estado.siendo_reparado;
-                                zapato_entregar.servidor_atencion = fila_actual.zapatero;
+                                if (fila_actual.motivo_cliente == Motivo.entregar_pedido)
+                                {
+                                    cant_zapatos_cola++;
+                                    zapato_entregar.estado = Estado.siendo_reparado;
+                                    zapato_entregar.servidor_atencion = fila_actual.zapatero;
+                                    if(zapato_entregar.t_inico_espera !=0)
+                                        tiempo_acum_espera += fila_actual.reloj - zapato_entregar.t_inico_espera;
+                                    zapato_entregar.t_inicio_reparacion = fila_actual.reloj;
+                                    // Cambia el estado del zapatero
 
-                                // Calcula el nuevo fin de reparacion
+                                    fila_actual.zapatero.estado = Estado.reparando_zapato;
+                                    fila_actual.zapatero.tiempo_inicio_reparacion = fila_actual.reloj;
 
-                                var resultadosRep = generarRNDUniforme(gen_reparacion, rep_a, rep_b);
-                                fila_actual.rnd4 = resultadosRep[0];
-                                fila_actual.t_reparacion = resultadosRep[1];
-                                fila_actual.t_fin_reparacion = fila_actual.reloj + fila_actual.t_atencion + secado;
+                                    // Calcula el nuevo fin de reparacion
+                                    if (calcularSecado)
+                                    {
+                                        calcularTiempoSecado(fila_actual.reloj, this.pathFile);
+                                        calcularSecado = false;
+                                    }
+                                    fila_actual.t_secado = this.secado;
+
+                                    var resultadosRep = generarRNDUniforme(gen_reparacion, rep_a, rep_b);
+                                    fila_actual.rnd4 = resultadosRep[0];
+                                    fila_actual.t_reparacion = resultadosRep[1];
+                                    fila_actual.t_fin_reparacion = fila_actual.reloj + fila_actual.t_reparacion + secado;
+                                }
+                                else
+                                {
+                                    fila_actual.zapatero.estado = Estado.libre;
+                                }
+                                
                             }
                         }
                     }
                 }
                 else if(fila_actual.evento == Eventos.fin_reparacion)
                 {
+                    fila_actual.motivo_cliente = Motivo.vacio;
+                    fila_actual.rnd2 = 0;
+                    fila_actual.t_reparacion = 0;
                     fila_actual.t_fin_reparacion = 0;
+                    fila_actual.rnd4 = 0;
                     var zapato_reparado = obtenerZapato(fila_actual.zapatos);
                     zapato_reparado.estado = Estado.esperando_retiro;
-                    zapato_reparado.servidor_atencion = fila_actual.zapatero;
+                    zapato_reparado.servidor_atencion = null;
+
+                    // Se calculan metricas
+
+                    tiempo_reparacion += fila_actual.reloj - zapato_reparado.t_inicio_reparacion;
+                    cant_zapatos_reparados++;
+
+                    tiempo_zapatero_reparacion += fila_actual.reloj - fila_actual.zapatero.tiempo_inicio_reparacion;
+
 
                     fila_actual.cola_retirar_zap.Add(zapato_reparado);
 
@@ -336,14 +478,24 @@ namespace TP_SIM_7.Interfaz
                         var zapato_a_reparar = fila_actual.cola_zapatos_reparacion[0];
                         zapato_a_reparar.estado = Estado.siendo_reparado;
                         zapato_a_reparar.servidor_atencion = fila_actual.zapatero;
+                        if (zapato_a_reparar.t_inico_espera != 0)
+                            tiempo_acum_espera += fila_actual.reloj - zapato_a_reparar.t_inico_espera;
+                        fila_actual.zapatero.tiempo_inicio_reparacion = fila_actual.reloj;
                         fila_actual.cola_zapatos_reparacion.RemoveAt(0);
 
                         // Calcula el nuevo fin de reparacion
 
+                        if (calcularSecado)
+                        {
+                            calcularTiempoSecado(fila_actual.reloj, this.pathFile);
+                            calcularSecado = false;
+                        }
+                        fila_actual.t_secado = this.secado;
+
                         var resultadosRep = generarRNDUniforme(gen_reparacion, rep_a, rep_b);
                         fila_actual.rnd4 = resultadosRep[0];
                         fila_actual.t_reparacion = resultadosRep[1];
-                        fila_actual.t_fin_reparacion = fila_actual.reloj + fila_actual.t_atencion + secado;
+                        fila_actual.t_fin_reparacion = fila_actual.reloj + fila_actual.t_reparacion + secado;
 
                     }
                     else
@@ -351,9 +503,30 @@ namespace TP_SIM_7.Interfaz
                         fila_actual.zapatero.estado = Estado.libre;
                     }
                 }
+
+                // Se calculan metricas
+
+                // % de clientes no atendidos
+                if(cant_clientes_atendidos != 0)
+                    fila_actual.porc_clientes_no_atendidos = (double)cant_clientes_no_atendidos / cant_clientes_atendidos;
+
+                var cant_dias = Math.Truncate(fila_actual.reloj / 1440);
+                fila_actual.porc_tiempo_reparacion = ((double)tiempo_zapatero_reparacion / (fila_actual.reloj- hora_inicio - (960*cant_dias))) *100;
+                // Tiempo promedio de reparación
+
+                if (cant_zapatos_reparados != 0)
+                    fila_actual.t_prom_fin_reparacion = tiempo_reparacion / cant_zapatos_reparados;
+
+                // Tiempo promedio en cola de los zapatos
+                if(cant_zapatos_cola != 0)
+                    fila_actual.t_prom_zap_cola = tiempo_acum_espera / cant_zapatos_cola;
+
                 //Se cambia el orden de las filas
                 if ((i >= this.fila_desde - 1 && i < this.fila_desde + this.filas_a_mostrar - 1) || (i == this.num_iteraciones - 1 && this.num_iteraciones != this.fila_desde + this.filas_a_mostrar - 1))
-                    contadores_actual = imprimirFila(fila_actual, contadores_actual);
+                {
+                    contadoresZapatos = imprimirFila(fila_actual, contadoresZapatos);
+                    contadoresClientes = imprimirClientes(fila_actual, contadoresClientes);
+                };
                 fila_anterior = fila_actual;
 
 
@@ -364,9 +537,36 @@ namespace TP_SIM_7.Interfaz
 
         }
 
-        private List<int> imprimirFila(VectorEstado fila_actual, List<int> contadores_actual)
+        private int imprimirClientes(VectorEstado fila_actual, int contadoresClientes)
         {
-            var cant_columnas = 19 + fila_actual.clientes.Count + fila_actual.zapatos.Count;
+            var cant_columnas = fila_actual.clientes.Count;
+            var fila = new string[cant_columnas];
+            int clientes_a_agregar = fila_actual.clientes.Count - contadoresClientes;
+
+            for (int i = clientes_a_agregar; i > 0; i--)
+            {
+                if (fila_actual.clientes[fila_actual.clientes.Count - i].estado != Estado.destruido)
+                {
+                    dgv_clientes.Columns.Add($"Cliente{fila_actual.clientes[fila_actual.clientes.Count - i].id}", $"Cliente {fila_actual.clientes[fila_actual.clientes.Count - i].id}");
+                    columas_a_agregar_AC++;
+                    lista_ids_clientes.Add(fila_actual.clientes[fila_actual.clientes.Count - i].id);
+                }
+            }
+            var contador = 0;
+            for (int i = 0; i < columas_a_agregar_AC; i++)
+            {
+                fila[i] = fila_actual.clientes[lista_ids_clientes[contador] - 1].estado.ToString();
+                contador++;
+
+            }
+            if(columas_a_agregar_AC >0)
+                dgv_clientes.Rows.Add(fila);
+            return fila_actual.clientes.Count;
+        }
+
+        private int imprimirFila(VectorEstado fila_actual, int contadoresZapatos)
+        {
+            var cant_columnas = 23 + fila_actual.zapatos.Count;
             var fila = new string[cant_columnas];
             fila[0] = fila_actual.reloj.ToString("0.00");
             fila[1] = fila_actual.evento.ToString();
@@ -387,30 +587,14 @@ namespace TP_SIM_7.Interfaz
             fila[16] = fila_actual.cola_zapatos_reparacion.Count.ToString();
             fila[17] = fila_actual.zapatero.estado.ToString();
             fila[18] = fila_actual.cola_retirar_zap.Count.ToString();
+            fila[19] = "%" + fila_actual.porc_clientes_no_atendidos.ToString("0.00");
+            fila[20] = fila_actual.t_prom_fin_reparacion.ToString("0.00");
+            fila[21] = "%" + fila_actual.porc_tiempo_reparacion.ToString("0.00");
+            fila[22] = fila_actual.t_prom_zap_cola.ToString("0.00");
+            int zapatos_a_agregar = fila_actual.zapatos.Count - contadoresZapatos;
 
-            int clientes_a_agregar = fila_actual.clientes.Count - contadores_actual[0];
-            int zapatos_a_agregar = fila_actual.zapatos.Count - contadores_actual[1];
-
-            int puntero = 19;
-
-            for (int i = clientes_a_agregar; i > 0; i--)
-            {
-                if (fila_actual.clientes[fila_actual.clientes.Count - i].estado != Estado.destruido)
-                {
-                    dgv_simulacion.Columns.Add($"Cliente{fila_actual.clientes[fila_actual.clientes.Count - i].id}", $"Cliente {fila_actual.clientes[fila_actual.clientes.Count - i].id}");
-                    columas_a_agregar_AC++;
-                    lista_ids_clientes.Add(fila_actual.clientes[fila_actual.clientes.Count - i].id);
-                }
-            }
+            int puntero = 23;
             var contador = 0;
-            for (int i = puntero; i < columas_a_agregar_AC + puntero; i++)
-            {
-                fila[i] = fila_actual.clientes[lista_ids_clientes[contador] - 1].estado.ToString();
-                contador++;
-                
-            }
-            puntero += contador;
-            contador = 0;
 
             // Agregar zapatos
 
@@ -431,7 +615,7 @@ namespace TP_SIM_7.Interfaz
 
             dgv_simulacion.Rows.Add(fila);
 
-            return new List<int> { fila_actual.clientes.Count, fila_actual.zapatos.Count };
+            return fila_actual.zapatos.Count;
         }
 
         private void calcularTiempoSecado(double reloj, string pathFile)
@@ -511,52 +695,6 @@ namespace TP_SIM_7.Interfaz
             return lista;
         }
 
-        private VectorEstado calcularFilaInicial(Random gen_llegada)
-        {
-            var fila = new VectorEstado();
-
-            fila.reloj = this.hora_inicio;
-            fila.evento = Eventos.inicializacion;
-            var resultados = generarRNDExponencial(gen_llegada, this.media_exp_llegada);
-            fila.rnd1 = resultados[0];
-            fila.t_llegada = resultados[1];
-            fila.t_prox_llegada = fila.reloj + fila.t_llegada;
-            fila.rnd2 = 0;
-            fila.rnd3 = 0;
-            fila.t_atencion = 0;
-            fila.t_fin_atencion = 0;
-            fila.rnd4 = 0;
-            fila.t_reparacion = 0;
-            fila.t_secado = 0;
-            fila.t_fin_reparacion = 0;
-            fila.t_restante_reparacion = 0;
-            fila.cola_clientes = new List<Cliente>();
-            fila.cola_zapatos_reparacion = new List<Zapatos>();
-            fila.cola_retirar_zap = new List<Zapatos>();
-            fila.zapatero = new Servidor() 
-            {
-                id = 1,
-                estado = Estado.libre,
-            };
-            fila.zapatos = new List<Zapatos>();
-            fila.clientes = new List<Cliente>();
-
-            for (int i = 0; i < this.cant_zapatos_inicial; i++)
-            {
-                var obj = new Zapatos();
-                obj.id = contador_id_zap;
-                obj.estado = Estado.esperando_retiro;
-                fila.zapatos.Add(obj);
-                fila.cola_retirar_zap.Add(obj);
-                this.contador_id_zap++;
-
-
-            }
-
-            
-
-            return fila;
-        }
 
 
         public List<double> generarRNDExponencial(Random generador, double m)

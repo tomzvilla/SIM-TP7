@@ -11,5 +11,7 @@ namespace TP_SIM_7.Clases
         public int id { get; set; }
         public Estado estado { get; set; }
         public Servidor servidor_atencion { get; set; }
+        public double t_inicio_reparacion { get; set; }
+        public double t_inico_espera { get; set; }
     }
 }

@@ -29,6 +29,10 @@ namespace TP_SIM_7.Clases
         public Servidor zapatero { get; set; }
         public List<Zapatos> zapatos { get; set; }
         public List<Cliente> clientes { get; set; }
+        public double porc_clientes_no_atendidos { get; set; }
+        public double t_prom_fin_reparacion { get; set; }
+        public double porc_tiempo_reparacion { get; set; }
+        public double t_prom_zap_cola { get; set; }
 
     }
 }

@@ -10,6 +10,7 @@ namespace TP_SIM_7.Clases
     {
         public int id { get; set; }
         public Estado estado { get; set; }
+        public double tiempo_inicio_reparacion { get; set; }
       
     }
 }

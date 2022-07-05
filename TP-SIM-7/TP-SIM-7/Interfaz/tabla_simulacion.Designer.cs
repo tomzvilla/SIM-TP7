@@ -49,7 +49,13 @@ namespace TP_SIM_7.Interfaz
             this.cola_zapatos = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.estado_z1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.cola_retirar_zap = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.porc_clientes_no_atendidos = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.t_prom_rep = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.porc_t_reparando = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.t_prom_cola = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dgv_clientes = new System.Windows.Forms.DataGridView();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_simulacion)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dgv_clientes)).BeginInit();
             this.SuspendLayout();
             // 
             // dgv_simulacion
@@ -78,10 +84,14 @@ namespace TP_SIM_7.Interfaz
             this.cola_clientes,
             this.cola_zapatos,
             this.estado_z1,
-            this.cola_retirar_zap});
+            this.cola_retirar_zap,
+            this.porc_clientes_no_atendidos,
+            this.t_prom_rep,
+            this.porc_t_reparando,
+            this.t_prom_cola});
             this.dgv_simulacion.Location = new System.Drawing.Point(12, 12);
             this.dgv_simulacion.Name = "dgv_simulacion";
-            this.dgv_simulacion.Size = new System.Drawing.Size(1212, 626);
+            this.dgv_simulacion.Size = new System.Drawing.Size(1137, 637);
             this.dgv_simulacion.TabIndex = 0;
             // 
             // reloj
@@ -106,7 +116,7 @@ namespace TP_SIM_7.Interfaz
             // 
             this.tiempo_entre_llegadas.HeaderText = "Tiempo Entre Llegadas";
             this.tiempo_entre_llegadas.Name = "tiempo_entre_llegadas";
-            this.tiempo_entre_llegadas.Width = 90;
+            this.tiempo_entre_llegadas.Width = 129;
             // 
             // prox_llegada
             // 
@@ -198,16 +208,53 @@ namespace TP_SIM_7.Interfaz
             this.cola_retirar_zap.Name = "cola_retirar_zap";
             this.cola_retirar_zap.Width = 77;
             // 
+            // porc_clientes_no_atendidos
+            // 
+            this.porc_clientes_no_atendidos.HeaderText = "% Clientes No Atendidos";
+            this.porc_clientes_no_atendidos.Name = "porc_clientes_no_atendidos";
+            this.porc_clientes_no_atendidos.Width = 134;
+            // 
+            // t_prom_rep
+            // 
+            this.t_prom_rep.HeaderText = "T Prom Reparacion";
+            this.t_prom_rep.Name = "t_prom_rep";
+            this.t_prom_rep.Width = 114;
+            // 
+            // porc_t_reparando
+            // 
+            this.porc_t_reparando.HeaderText = "% T Reparando";
+            this.porc_t_reparando.Name = "porc_t_reparando";
+            this.porc_t_reparando.Width = 97;
+            // 
+            // t_prom_cola
+            // 
+            this.t_prom_cola.HeaderText = "T Prom Zapatos en Cola";
+            this.t_prom_cola.Name = "t_prom_cola";
+            this.t_prom_cola.Width = 115;
+            // 
+            // dgv_clientes
+            // 
+            this.dgv_clientes.AllowUserToAddRows = false;
+            this.dgv_clientes.AllowUserToDeleteRows = false;
+            this.dgv_clientes.AllowUserToResizeRows = false;
+            this.dgv_clientes.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgv_clientes.Location = new System.Drawing.Point(1168, 50);
+            this.dgv_clientes.Name = "dgv_clientes";
+            this.dgv_clientes.Size = new System.Drawing.Size(604, 599);
+            this.dgv_clientes.TabIndex = 5;
+            // 
             // tabla_simulacion
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1246, 649);
+            this.ClientSize = new System.Drawing.Size(1784, 661);
+            this.Controls.Add(this.dgv_clientes);
             this.Controls.Add(this.dgv_simulacion);
             this.Name = "tabla_simulacion";
             this.Text = "tabla_simulacion";
             this.Load += new System.EventHandler(this.tabla_simulacion_Load);
             ((System.ComponentModel.ISupportInitialize)(this.dgv_simulacion)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dgv_clientes)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -215,6 +262,7 @@ namespace TP_SIM_7.Interfaz
         #endregion
 
         private System.Windows.Forms.DataGridView dgv_simulacion;
+        private System.Windows.Forms.DataGridView dgv_clientes;
         private System.Windows.Forms.DataGridViewTextBoxColumn reloj;
         private System.Windows.Forms.DataGridViewTextBoxColumn evento;
         private System.Windows.Forms.DataGridViewTextBoxColumn rnd1;
@@ -234,5 +282,9 @@ namespace TP_SIM_7.Interfaz
         private System.Windows.Forms.DataGridViewTextBoxColumn cola_zapatos;
         private System.Windows.Forms.DataGridViewTextBoxColumn estado_z1;
         private System.Windows.Forms.DataGridViewTextBoxColumn cola_retirar_zap;
+        private System.Windows.Forms.DataGridViewTextBoxColumn porc_clientes_no_atendidos;
+        private System.Windows.Forms.DataGridViewTextBoxColumn t_prom_rep;
+        private System.Windows.Forms.DataGridViewTextBoxColumn porc_t_reparando;
+        private System.Windows.Forms.DataGridViewTextBoxColumn t_prom_cola;
     }
 }
